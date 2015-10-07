@@ -1,0 +1,8 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.prof.android.moviecorndb.favouriteActivity">
+    <item
+        android:title="favourite"
+        android:id="@+id/favourite_movies"/>
+</menu>

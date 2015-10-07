@@ -1,0 +1,128 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:background="#f1f1f9"
+    tools:context="com.prof.android.moviecorndb.favourite_movie_detail">
+
+    <LinearLayout
+
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#fad354"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="0.90">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/title"
+                    android:textSize="17sp"
+                    android:textColor="#5f2d3f"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="7dp"
+                    android:paddingLeft="10dp"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/release_date"
+                    android:textSize="15sp"
+                    android:textColor="#5f2d3f"
+                    android:layout_gravity="bottom"
+                    android:paddingLeft="10dp"
+                    />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/user_rate"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textColor="#4f1831"
+                android:padding="5dp"
+                android:layout_marginRight="7dp"
+                android:background="#f1f1f9"
+                android:textSize="15sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageView1"
+                android:paddingLeft="10dp"
+                android:paddingTop="4dp"
+                android:clickable="true"
+                />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="10dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginBottom="10dp"
+                    android:id="@+id/movie_tag_line"
+                    android:textSize="20sp"
+                    android:fontFamily="cursive"
+                    android:textStyle="italic"
+                    android:textColor="#4f1831" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/movie_time_lenght"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginBottom="3dp"
+                    android:textColor="#4f1831"
+                    android:textSize="15sp"/>
+
+                <TextView
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/movie_revenue"
+                    android:textColor="#4f1831"
+                    android:textSize="17sp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/overview"
+            android:textSize="15sp"
+            android:textColor="#287070"
+            android:padding="5dp"
+            />
+
+    </LinearLayout>
+
+</ScrollView>
