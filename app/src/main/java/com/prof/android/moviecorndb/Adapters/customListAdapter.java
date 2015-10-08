@@ -1,6 +1,7 @@
 package com.prof.android.moviecorndb.Adapters;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,12 +23,15 @@ public class customListAdapter extends ArrayAdapter<String> {
     private Context mContext;
     private String[] mThumbIds = null;
     int state;
+    SharedPreferences.Editor editor;
 
     public customListAdapter(Context context, String[] param, int state) {
         super(context, 0, 0);
         this.mContext  = context;
         this.mThumbIds = param;
         this.state = state;
+
+        editor = context.getSharedPreferences("MYPOS",context.MODE_PRIVATE).edit();
     }
 
     @Override
@@ -57,6 +61,8 @@ public class customListAdapter extends ArrayAdapter<String> {
             convertView = LayoutInflater.from(this.mContext).inflate(R.layout.image_list_item,
                     parent, false);
         }
+        editor.putInt("myPosition", position).apply();
+
         ImageView imageView = (ImageView) convertView.findViewById(R.id.image_view_item_1);
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
 

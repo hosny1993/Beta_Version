@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -48,6 +49,7 @@ public class MainActivityFragment extends Fragment {
     GridView mGridView;
     fetchMovieData movieData;
     customListAdapter customAdapter;
+    SharedPreferences editor;
 
     Uri uri = Uri.parse(MoviesContract.BASE_CONTENT_URI+"/"+
             MoviesContract.MOVIE.TABLE_NAME);
@@ -68,6 +70,7 @@ public class MainActivityFragment extends Fragment {
         setHasOptionsMenu(true);
 
         movieData = new fetchMovieData();
+        editor = getActivity().getSharedPreferences("MYPOS",getActivity().MODE_PRIVATE);
     }
 
     @Override
@@ -309,5 +312,10 @@ public class MainActivityFragment extends Fragment {
         mCallBacks = null;
     }
 
-    
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mGridView.setSelection(editor.getInt("myPosition", 0));
+        Log.v("MYTAGG", " " + editor.getInt("myPosition", 0));
+    }
 }
