@@ -37,6 +37,7 @@ public class fetchTextFromUrl {
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
             }catch (IOException e){
+                Log.v("EXCCC", " "+e.getMessage());
                 e.printStackTrace();
             }
 
@@ -61,7 +62,7 @@ public class fetchTextFromUrl {
 
             jsonText = buffer.toString();
 
-        }catch (IOException e){
+        }catch (Exception e){
             Log.e(LOG_TAG,"Network Exception ",e);
             return null;
 

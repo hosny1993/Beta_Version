@@ -76,11 +76,20 @@ public class customListAdapter extends ArrayAdapter<String> {
         Log.v("uri", " :  " + myUri);
 
         if (this.state == 0) {
-            Picasso.with(this.mContext).load(myUri).into(imageView);
+            try{
+                Picasso.with(this.mContext).load(myUri).into(imageView);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
             return convertView;
         }
         else {
-            Picasso.with(this.mContext).load(myUri).resize(200,300).centerCrop().into(imageView);
+            try {
+                Picasso.with(this.mContext).load(myUri).resize(200,300).centerCrop().into(imageView);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
             return convertView;
         }
 

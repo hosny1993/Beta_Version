@@ -165,7 +165,12 @@ public class MainActivityFragment extends Fragment {
         else {
             state = 0;
         }
-        mCallBacks.getID(Ids[0]);
+        try{
+            mCallBacks.getID(Ids[0]);
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
+
         customAdapter = new customListAdapter(getActivity(), myIDs, state);
         mGridView.setAdapter(customAdapter);
         mGridView.setClickable(true);

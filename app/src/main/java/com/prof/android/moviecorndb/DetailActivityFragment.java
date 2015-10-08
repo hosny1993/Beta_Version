@@ -228,9 +228,9 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
                     appendQueryParameter("api_key", API_KEY);
 
             String myUri = uri.toString();
-            String jsonText = fetchTextFromUrl.fetchData(myUri);
 
             try{
+                String jsonText = fetchTextFromUrl.fetchData(myUri);
                 fetchMovieData(jsonText);
             }catch (JSONException e){
                 e.printStackTrace();
@@ -239,28 +239,32 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
         }
 
         public void fetchMovieData(String jsonString) throws JSONException{
-            JSONObject JSON   = new JSONObject(jsonString);
+            try {
+                JSONObject JSON   = new JSONObject(jsonString);
 
-            TITLE    = JSON.getString("title");
-            RATE     = JSON.getDouble("vote_average");
-            RELEASE  = JSON.getString("release_date");
-            OVERVIEW = JSON.getString("overview");
-            RUNTIME  = JSON.getString("runtime");
-            REVENUE  = JSON.getString("revenue");
-            HOMEPAGE = JSON.getString("homepage");
-            TAGLINE  = JSON.getString("tagline");
-            POSTER   = JSON.getString("poster_path");
-            MOVIE_ID = JSON.getLong("id");
+                TITLE    = JSON.getString("title");
+                RATE     = JSON.getDouble("vote_average");
+                RELEASE  = JSON.getString("release_date");
+                OVERVIEW = JSON.getString("overview");
+                RUNTIME  = JSON.getString("runtime");
+                REVENUE  = JSON.getString("revenue");
+                HOMEPAGE = JSON.getString("homepage");
+                TAGLINE  = JSON.getString("tagline");
+                POSTER   = JSON.getString("poster_path");
+                MOVIE_ID = JSON.getLong("id");
 
-            movieValues.put(MoviesContract.MOVIE.MOVIE_NAME, TITLE);
-            movieValues.put(MoviesContract.MOVIE.MOVIE_RELEASE, RELEASE);
-            movieValues.put(MoviesContract.MOVIE.MOVIE_RATE, RATE);
-            movieValues.put(MoviesContract.MOVIE.MOVIE_OVERVIEW, OVERVIEW);
-            movieValues.put(MoviesContract.MOVIE.MOVIE_ID, MOVIE_ID);
-            movieValues.put(MoviesContract.MOVIE.MOVIE_TAGLINE, TAGLINE);
-            movieValues.put(MoviesContract.MOVIE.MOVIE_RUNTIME, RUNTIME);
-            movieValues.put(MoviesContract.MOVIE.MOVIE_REVENUE, REVENUE);
-            movieValues.put(MoviesContract.MOVIE.MOVIE_POSTER, POSTER);
+                movieValues.put(MoviesContract.MOVIE.MOVIE_NAME, TITLE);
+                movieValues.put(MoviesContract.MOVIE.MOVIE_RELEASE, RELEASE);
+                movieValues.put(MoviesContract.MOVIE.MOVIE_RATE, RATE);
+                movieValues.put(MoviesContract.MOVIE.MOVIE_OVERVIEW, OVERVIEW);
+                movieValues.put(MoviesContract.MOVIE.MOVIE_ID, MOVIE_ID);
+                movieValues.put(MoviesContract.MOVIE.MOVIE_TAGLINE, TAGLINE);
+                movieValues.put(MoviesContract.MOVIE.MOVIE_RUNTIME, RUNTIME);
+                movieValues.put(MoviesContract.MOVIE.MOVIE_REVENUE, REVENUE);
+                movieValues.put(MoviesContract.MOVIE.MOVIE_POSTER, POSTER);
+            }catch (Exception e){
+                Log.d("MYLOG", " " + e.getMessage());
+            }
 
 
         }
@@ -268,34 +272,37 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            try {
+                if(REVENUE.equals("0"))
+                    movieRevenue.setText("");
+                else
+                    movieRevenue.setText(" " + UtilityF.parseRevenue(REVENUE) + "  $$ ");
 
-            if(REVENUE.equals("0"))
-                movieRevenue.setText("");
-            else
-                movieRevenue.setText(" " + UtilityF.parseRevenue(REVENUE) + "  $$ ");
+                movieLenght.setText(" " + RUNTIME + " min ");
+                movieTagLine.setText(TAGLINE);
+                title.setText(TITLE);
+                date.setText(RELEASE);
+                overview.setText(OVERVIEW);
+                rate.setText(RATE+"/10");
 
-            movieLenght.setText(" " + RUNTIME + " min ");
-            movieTagLine.setText(TAGLINE);
-            title.setText(TITLE);
-            date.setText(RELEASE);
-            overview.setText(OVERVIEW);
-            rate.setText(RATE+"/10");
-
-            final String SCHEMA      = "http";
-            final String AUTHORITY   = "image.tmdb.org";
-            final String PATH        = "t/p/w342";
-            String APPEND_PATH = POSTER;
+                final String SCHEMA      = "http";
+                final String AUTHORITY   = "image.tmdb.org";
+                final String PATH        = "t/p/w342";
+                String APPEND_PATH = POSTER;
 
 
-            Uri.Builder uri = new Uri.Builder();
-            uri.scheme(SCHEMA).authority(AUTHORITY).path(PATH);
+                Uri.Builder uri = new Uri.Builder();
+                uri.scheme(SCHEMA).authority(AUTHORITY).path(PATH);
 
-            myUri = uri.toString()+APPEND_PATH;
-            Log.v("uri", " :  " + myUri);
+                myUri = uri.toString()+APPEND_PATH;
+                Log.v("uri", " :  " + myUri);
+                    Picasso.with(getActivity()).
+                            load(myUri).resize(200,300).centerInside().
+                            into(poster);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
 
-            Picasso.with(getActivity()).
-                    load(myUri).resize(200,300).centerInside().
-                    into(poster);
 
         }
     }
@@ -325,11 +332,11 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
 
             String myUri = uri.toString();
             Log.v("URII",myUri);
-            String jsonText = fetchTextFromUrl.fetchData(myUri);
 
             try {
+                String jsonText = fetchTextFromUrl.fetchData(myUri);
                 fetchMovieData(jsonText);
-            }catch (JSONException e){
+            }catch (Exception e){
                 e.printStackTrace();
             }
             return null;
@@ -408,11 +415,11 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
 
             String myUri = uri.toString();
             Log.v("URII", myUri);
-            String jsonText = fetchTextFromUrl.fetchData(myUri);
 
             try {
+                String jsonText = fetchTextFromUrl.fetchData(myUri);
                 fetchMovieData(jsonText);
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
