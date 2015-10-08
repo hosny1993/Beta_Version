@@ -57,7 +57,7 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
     ContentValues reviewValues = new ContentValues();
     long movieId = 0;
     ContentResolver resolver;
-    final String API_KEY ="";  //"3b28bfa808bcbba743a3f81de1b68868";
+    final String API_KEY = "3b28bfa808bcbba743a3f81de1b68868";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

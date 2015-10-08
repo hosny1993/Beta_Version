@@ -43,7 +43,7 @@ public class MainActivityFragment extends Fragment {
     final String API_KEY    =  "3b28bfa808bcbba743a3f81de1b68868";
 
     int state = 0;
-
+    int mPosition = 0;
     //fetchMovieData movieData;
     GridView mGridView;
     fetchMovieData movieData;
@@ -283,6 +283,7 @@ public class MainActivityFragment extends Fragment {
                                         int position, long id) {
 
                     mCallBacks.idSelected(movieID[position]);
+                    mPosition = position;
                 }
 
             });
@@ -294,8 +295,6 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-//        getFragmentManager().beginTransaction().addToBackStack("XYZ").
-//                replace(R.id.fragment_movies, new favouriteFragment()).commit();
         mCallBacks = (CallBacks) activity;
     }
 
@@ -304,4 +303,6 @@ public class MainActivityFragment extends Fragment {
         super.onDetach();
         mCallBacks = null;
     }
+
+    
 }

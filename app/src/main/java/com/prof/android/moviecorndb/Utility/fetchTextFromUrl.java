@@ -32,10 +32,13 @@ public class fetchTextFromUrl {
             }catch (MalformedURLException e) {
                 e.printStackTrace();
             }
-
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
+            try {
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
 
             inputStream = urlConnection.getInputStream();
             StringBuffer buffer = new StringBuffer();

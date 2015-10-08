@@ -24,6 +24,9 @@ import com.prof.android.moviecorndb.data.MoviesContract;
 import java.util.ArrayList;
 
 
+/*
+This file is not used to store movies data offline including thier posters
+ */
 public class favouriteFragment extends Fragment {
 
     FavouriteAdapter myFavouriteAdapter;
