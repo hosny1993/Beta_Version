@@ -40,7 +40,7 @@ import java.util.Calendar;
  */
 public class MainActivityFragment extends Fragment {
 
-    final String API_KEY    = ""; //"3b28bfa808bcbba743a3f81de1b68868";
+    final String API_KEY    =  "3b28bfa808bcbba743a3f81de1b68868";
 
     int state = 0;
 
@@ -255,14 +255,18 @@ public class MainActivityFragment extends Fragment {
                 Log.v(" poster:  ",posters[i]);
                 Log.v("Id: ",""+movieID[i]);
             }
-            mCallBacks.getID(movieID[0]);
+
             return null;
         }
 
         @Override
         protected void onPostExecute(Void result) {
 
-            mCallBacks.getID(movieID[0]);
+            try{
+                mCallBacks.getID(movieID[0]);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
 
             int state = 0;
             if (getActivity().findViewById(R.id.fragment_details_frame) != null){
