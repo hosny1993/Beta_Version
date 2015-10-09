@@ -87,7 +87,6 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
-        if (getActivity().findViewById( R.id.fragment_details_frame) == null) {
             // Inflate the menu; this adds items to the action bar if it is present.
             inflater.inflate(R.menu.share_menu, menu);
 
@@ -103,7 +102,6 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
             } else {
                 Log.d("HHGGFF", "Share Action Provider is null?");
             }
-        }
     }
 
     private Intent createShareForecastIntent() {

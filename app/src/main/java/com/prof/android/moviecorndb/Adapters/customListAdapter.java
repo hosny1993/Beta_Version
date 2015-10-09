@@ -50,18 +50,12 @@ public class customListAdapter extends ArrayAdapter<String> {
     }
 
     @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
     public View getView(final int position,View convertView,ViewGroup parent) {
 
         if (convertView == null) {
             convertView = LayoutInflater.from(this.mContext).inflate(R.layout.image_list_item,
                     parent, false);
         }
-        editor.putInt("myPosition", position).apply();
 
         ImageView imageView = (ImageView) convertView.findViewById(R.id.image_view_item_1);
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
@@ -98,7 +92,6 @@ public class customListAdapter extends ArrayAdapter<String> {
 
             return convertView;
         }
-
 
     }
 

@@ -44,8 +44,8 @@ public class MainActivityFragment extends Fragment {
     final String API_KEY    =  "3b28bfa808bcbba743a3f81de1b68868";
 
     int state = 0;
-    int mPosition = 0;
     //fetchMovieData movieData;
+    private int mPosition = 0;
     GridView mGridView;
     fetchMovieData movieData;
     customListAdapter customAdapter;
@@ -71,11 +71,10 @@ public class MainActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
+        if (savedInstanceState != null)
+            Log.v("ONSSS"," "+savedInstanceState.get("Position"));
         movieData = new fetchMovieData();
-        editor = getActivity().getSharedPreferences("MYPOS", getActivity().MODE_PRIVATE);
-        sState = getActivity().getSharedPreferences("MyRate", getActivity().MODE_PRIVATE);
-        rateEditor = getActivity().getSharedPreferences("MyRate", getActivity().MODE_PRIVATE).edit();
+
     }
 
     @Override
@@ -90,35 +89,31 @@ public class MainActivityFragment extends Fragment {
         if (id == R.id.popular) {
             Log.v("RATED", " POP");
             updatePopulare();
-            rateEditor.putInt("STATE", 0);
             state = 0;
         }
         else if (id == R.id.rated) {
             updateRated();
             state = 1;
-            rateEditor.putInt("STATE",1);
         }
         else if (id == R.id.theater) {
             updateTheatr();
             state = 2;
-            rateEditor.putInt("STATE",2);
         }
         else if (id == R.id.favourite_movie){
             updateFavourite();
             state = 3;
-            rateEditor.putInt("STATE",3);
         }
         return true;
     }
 
     public void onStart() {
-        if (sState.getInt("STATE",0) == 0)
+        if (state == 0)
             updatePopulare();
-        else if (sState.getInt("STATE",1) == 1)
+        else if (state == 1)
             updateRated();
-        else if (sState.getInt("STATE",2) == 2)
+        else if (state == 2)
             updateTheatr();
-        else if (sState.getInt("STATE",3) == 3)
+        else if (state == 3)
             updateFavourite();
         else
         updatePopulare();
@@ -199,7 +194,6 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        setRetainInstance(true);
         View rootView = null;
         if(getActivity().findViewById(R.id.fragment_details_frame) != null){
             rootView = inflater.inflate(R.layout.tablet_three_posters, container, false);
@@ -297,20 +291,34 @@ public class MainActivityFragment extends Fragment {
 
             }
             customAdapter = new customListAdapter(getActivity(), posters, state);
+
             mGridView.setAdapter(customAdapter);
             mGridView.setClickable(true);
+            Log.v(LOG_TAG, "MYPOS: "+mPosition);
+
             mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View v,
                                         int position, long id) {
 
                     mCallBacks.idSelected(movieID[position]);
                     mPosition = position;
+                    mGridView.setTag(position);
                 }
 
             });
+
             super.onPostExecute(result);
         }
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (outState != null ) {
+            outState.putInt("Position", (int) mGridView.getTag());
+            Log.v("MMMMSSS", " " + (int) mGridView.getTag());
+        }
     }
 
     @Override
@@ -325,17 +333,4 @@ public class MainActivityFragment extends Fragment {
         mCallBacks = null;
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mGridView.setSelection(editor.getInt("myPosition", 0));
-        Log.v("MYTAGG", " " + editor.getInt("myPosition", 0));
-    }
-
-    @Override
-    public void onViewStateRestored(Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        mGridView.setSelection(editor.getInt("myPosition", 0));
-        Log.v("MYTAGG", " " + editor.getInt("myPosition", 0));
-    }
 }
