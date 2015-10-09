@@ -86,20 +86,23 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.share_menu, menu);
 
-        // Retrieve the share menu item
-        MenuItem menuItem = menu.findItem(R.id.menu_item_share);
+        if (getActivity().findViewById( R.id.fragment_details_frame) == null) {
+            // Inflate the menu; this adds items to the action bar if it is present.
+            inflater.inflate(R.menu.share_menu, menu);
 
-        // Get the provider and hold onto it to set/change the share intent.
-        ShareActionProvider mShareActionProvider =
-                (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+            // Retrieve the share menu item
+            MenuItem menuItem = menu.findItem(R.id.menu_item_share);
 
-        if (mShareActionProvider != null ) {
-            mShareActionProvider.setShareIntent(createShareForecastIntent());
-        } else {
-            Log.d("HHGGFF", "Share Action Provider is null?");
+            // Get the provider and hold onto it to set/change the share intent.
+            ShareActionProvider mShareActionProvider =
+                    (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+            if (mShareActionProvider != null) {
+                mShareActionProvider.setShareIntent(createShareForecastIntent());
+            } else {
+                Log.d("HHGGFF", "Share Action Provider is null?");
+            }
         }
     }
 
