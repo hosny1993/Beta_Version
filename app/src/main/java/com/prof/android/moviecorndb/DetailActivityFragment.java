@@ -75,6 +75,9 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
     Uri queryUri = Uri.parse(MoviesContract.BASE_CONTENT_URI + "/" +
             MoviesContract.MOVIE_REVIEWS.TABLE_NAME);
 
+    SharedPreferences.Editor editor;
+    SharedPreferences prefs;
+
     public DetailActivityFragment() {
         setHasOptionsMenu(true);
     }
@@ -82,6 +85,10 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        editor = getActivity().
+                getSharedPreferences("DB", Context.MODE_APPEND).edit();
+        prefs  = getActivity().getSharedPreferences("DB", Context.MODE_PRIVATE);
     }
 
     @Override
@@ -104,6 +111,7 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
             }
     }
 
+
     private Intent createShareForecastIntent() {
 
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -122,6 +130,9 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
             }
         }catch (Exception e){
             e.printStackTrace();
+        }
+        if (!cursor.moveToNext()){
+            youtubeUrl = prefs.getString("YOUT","youtube.com");
         }
 
         shareIntent.putExtra(Intent.EXTRA_TEXT, " " + youtubeUrl);
@@ -445,11 +456,13 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
                         appendQueryParameter(KEY, trailersUrls[0]).build();
                 reviewValues.put(MoviesContract.MOVIE_REVIEWS.MOVIE_YOUTUBE, uri.toString());
                 youtubeUrl = uri.toString();
+                editor.putString("YOUT", youtubeUrl);
+                editor.commit();
+                resolver.insert(queryUri,reviewValues);
                 Log.v("HHGGDD", " "+uri.toString());
             }catch (Exception e){
                 e.printStackTrace();
             }
-            resolver.insert(queryUri,reviewValues);
 
             trailerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 

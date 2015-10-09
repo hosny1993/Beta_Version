@@ -32,7 +32,7 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
         }else {
             getFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_movies, mContent, "TTGG")
+                    .add(R.id.fragment_movies, mContent, "TTGG")
                     .commit();
         }
 
@@ -45,7 +45,6 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
                     .beginTransaction()
                     .replace(R.id.fragment_details_frame,myFragment, "TTTGG")
                     .commit();
-            Log.v("HHHTTTGGG", " THIS HAPPENS");
         }
 
     }
@@ -106,7 +105,11 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
                 findFragmentByTag("TTTGG")).updateUI(id);
     }
 
-//    public void replace(android.app.Fragment fragment){
-//            getFragmentManager().beginTransaction().replace(R.id.fragment_movies,fragment).commit();
-//    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+
+        getFragmentManager().putFragment(
+                outState, "TTFGG", getFragmentManager().findFragmentByTag("TTGG"));
+        super.onSaveInstanceState(outState);
+    }
 }

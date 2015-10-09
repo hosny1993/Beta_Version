@@ -74,12 +74,10 @@ public class MainActivityFragment extends Fragment{
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(true);
-        setRetainInstance(false);
 
         editor = getActivity().
                 getSharedPreferences("AG", Context.MODE_APPEND).edit();
         prefs  = getActivity().getSharedPreferences("AG", Context.MODE_PRIVATE);
-
 
     }
 
@@ -131,9 +129,6 @@ public class MainActivityFragment extends Fragment{
             mGridView = (GridView) rootView.findViewById(R.id.list_item);
         }
 
-        //setRetainInstance(true);
-
-
         return rootView;
 
     }
@@ -165,7 +160,7 @@ public class MainActivityFragment extends Fragment{
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+
 
         if (savedInstanceState != null && savedInstanceState.containsKey("SAVV") ) {
             Log.v("positon", " " + (int) savedInstanceState.get("SAVV"));
@@ -176,19 +171,29 @@ public class MainActivityFragment extends Fragment{
             sPosition = (int) savedInstanceState.get("SEL");
         }
 
+        else if ((getActivity().findViewById(R.id.fragment_details_frame)) == null) {
+            try {
+                mPosition = prefs.getInt("MMGG", 0);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+
         if (outState != null ) {
             outState.putInt("SAVV", mGridView.getFirstVisiblePosition());
             Log.v("SAVV", " " + mGridView.getFirstVisiblePosition());
         }
-        if (mGridView.getTag() != null){
+        if (mGridView.getTag() != null) {
             outState.putInt("SEL", (int) mGridView.getTag());
             Log.v("SEL", " " + (int) mGridView.getTag());
         }
+
+        super.onSaveInstanceState(outState);
         Toast.makeText(getActivity(), "OnSaveInstanceBundle", Toast.LENGTH_SHORT).show();
     }
 
@@ -364,8 +369,13 @@ public class MainActivityFragment extends Fragment{
 
             }
             mGridView.setClickable(true);
-            customAdapter = new customListAdapter(getActivity(),
-                    posters, state, posters.length);
+            try {
+                customAdapter = new customListAdapter(getActivity(),
+                        posters, state, posters.length);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
 
             mGridView.setAdapter(customAdapter);
             mGridView.setSelection(selectPos);
@@ -375,6 +385,8 @@ public class MainActivityFragment extends Fragment{
                                         int position, long id) {
 
                     mCallBacks.idSelected(movieID[position]);
+                    editor.putInt("MMGG", position);
+                    editor.commit();
                     mGridView.setTag(position);
                 }
 
