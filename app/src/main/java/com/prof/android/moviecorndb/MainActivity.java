@@ -20,15 +20,21 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
         return R.layout.activity_master_detail;
     }
 
+    MainActivityFragment mContent = new MainActivityFragment();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getResId());
 
-        getFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_movies, new MainActivityFragment(), "TTGG")
-                .commit();
+        if (savedInstanceState != null){
+            mContent = (MainActivityFragment) getFragmentManager().findFragmentByTag("TTGG");
+        }else {
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_movies, mContent, "TTGG")
+                    .commit();
+        }
 
         if(findViewById(R.id.fragment_details_frame) == null){
 
@@ -41,6 +47,7 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
                     .commit();
             Log.v("HHHTTTGGG", " THIS HAPPENS");
         }
+
     }
 
     @Override

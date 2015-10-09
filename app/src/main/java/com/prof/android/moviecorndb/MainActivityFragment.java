@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.prof.android.moviecorndb.Adapters.customListAdapter;
 import com.prof.android.moviecorndb.Utility.fetchTextFromUrl;
@@ -39,22 +40,23 @@ import java.util.Calendar;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class MainActivityFragment extends Fragment{
 
     final String API_KEY    =  "3b28bfa808bcbba743a3f81de1b68868";
 
     int state = 0;
-    //fetchMovieData movieData;
+
     private int mPosition = 0;
+    private int sPosition = 0;
+
     GridView mGridView;
     fetchMovieData movieData;
     customListAdapter customAdapter;
 
-    SharedPreferences editor;
-    SharedPreferences sState;
-    SharedPreferences.Editor rateEditor;
+    SharedPreferences.Editor editor;
+    SharedPreferences prefs;
 
-    Uri uri = Uri.parse(MoviesContract.BASE_CONTENT_URI+"/"+
+    Uri uri = Uri.parse(MoviesContract.BASE_CONTENT_URI + "/" +
             MoviesContract.MOVIE.TABLE_NAME);
 
     private CallBacks mCallBacks;
@@ -70,10 +72,14 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setHasOptionsMenu(true);
-        if (savedInstanceState != null)
-            Log.v("ONSSS"," "+savedInstanceState.get("Position"));
-        movieData = new fetchMovieData();
+        setRetainInstance(false);
+
+        editor = getActivity().
+                getSharedPreferences("AG", Context.MODE_APPEND).edit();
+        prefs  = getActivity().getSharedPreferences("AG", Context.MODE_PRIVATE);
+
 
     }
 
@@ -88,51 +94,128 @@ public class MainActivityFragment extends Fragment {
 
         if (id == R.id.popular) {
             Log.v("RATED", " POP");
-            updatePopulare();
-            state = 0;
+            updatePopulare(0);
+            editor.putInt("STATE", 0);
         }
         else if (id == R.id.rated) {
-            updateRated();
+            updateRated(0);
             state = 1;
+            editor.putInt("STATE",1);
         }
         else if (id == R.id.theater) {
-            updateTheatr();
+            updateTheatr(0);
             state = 2;
+            editor.putInt("STATE",2);
         }
         else if (id == R.id.favourite_movie){
-            updateFavourite();
+            updateFavourite(0);
             state = 3;
+            editor.putInt("STATE",3);
         }
+
+        editor.commit();
         return true;
     }
 
-    public void onStart() {
-        if (state == 0)
-            updatePopulare();
-        else if (state == 1)
-            updateRated();
-        else if (state == 2)
-            updateTheatr();
-        else if (state == 3)
-            updateFavourite();
-        else
-        updatePopulare();
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-        super.onStart();
+        View rootView = null;
+        if(getActivity().findViewById(R.id.fragment_details_frame) != null){
+            rootView = inflater.inflate(R.layout.tablet_three_posters, container, false);
+            mGridView = (GridView) rootView.findViewById(R.id.list_item_tablet);
+        }
+        else {
+            rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            mGridView = (GridView) rootView.findViewById(R.id.list_item);
+        }
+
+        //setRetainInstance(true);
+
+
+        return rootView;
+
     }
 
-    public void updateRated() {
-        movieData = new fetchMovieData();
+    @Override
+    public void onStart() {
+
+        super.onStart();
+        int currentState = 0;
+
+        if (sPosition != 0){
+            currentState = sPosition;
+        }else{
+            currentState = mPosition;
+        }
+
+        if (prefs.getInt("STATE", 0) == 0)
+            updatePopulare(currentState);
+        else if (prefs.getInt("STATE", 0) == 1)
+            updateRated(currentState);
+        else if (prefs.getInt("STATE", 0) == 2)
+            updateTheatr(currentState);
+        else if (prefs.getInt("STATE", 0) == 3)
+            updateFavourite(currentState);
+        else
+            updatePopulare(currentState);
+
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey("SAVV") ) {
+            Log.v("positon", " " + (int) savedInstanceState.get("SAVV"));
+            mPosition = (int) savedInstanceState.get("SAVV");
+        }
+        if (savedInstanceState != null && savedInstanceState.containsKey("SEL")){
+            Log.v("selection", " " + (int) savedInstanceState.get("SEL"));
+            sPosition = (int) savedInstanceState.get("SEL");
+        }
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (outState != null ) {
+            outState.putInt("SAVV", mGridView.getFirstVisiblePosition());
+            Log.v("SAVV", " " + mGridView.getFirstVisiblePosition());
+        }
+        if (mGridView.getTag() != null){
+            outState.putInt("SEL", (int) mGridView.getTag());
+            Log.v("SEL", " " + (int) mGridView.getTag());
+        }
+        Toast.makeText(getActivity(), "OnSaveInstanceBundle", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mCallBacks = (CallBacks) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallBacks = null;
+    }
+
+    public void updateRated(int m) {
+        movieData = new fetchMovieData(m);
         movieData.execute("vote_average.desc", "US", "R", "", "");
     }
 
-    public void updatePopulare() {
-        movieData = new fetchMovieData();
+    public void updatePopulare(int m) {
+        movieData = new fetchMovieData(m);
         movieData.execute("popularity.desc", "", "", "", "");
     }
 
-    public void updateTheatr() {
-        movieData = new fetchMovieData();
+    public void updateTheatr(int m) {
+        movieData = new fetchMovieData(m);
         Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = df.format(c.getTime());
@@ -140,7 +223,8 @@ public class MainActivityFragment extends Fragment {
         movieData.execute("", "", "", "" + formattedDate, "" + formattedDate);
     }
 
-    public void updateFavourite(){
+    public void updateFavourite(int m){
+
         ContentResolver contentResolver = getActivity().getContentResolver();
         Cursor cursor = contentResolver.query(uri, null, null, null, null);
 
@@ -164,7 +248,6 @@ public class MainActivityFragment extends Fragment {
             ));
 
         }
-
         int state = 0;
         if (getActivity().findViewById(R.id.fragment_details_frame) != null){
             state = 1;
@@ -173,12 +256,15 @@ public class MainActivityFragment extends Fragment {
             state = 0;
         }
         try{
-            mCallBacks.getID(Ids[0]);
+            if (mPosition > cursor.getCount())
+                mCallBacks.getID(0);
+            else
+                mCallBacks.getID(Ids[mPosition]);
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        customAdapter = new customListAdapter(getActivity(), myIDs, state);
+        customAdapter = new customListAdapter(getActivity(), myIDs, state, myIDs.length);
         mGridView.setAdapter(customAdapter);
         mGridView.setClickable(true);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -190,31 +276,17 @@ public class MainActivityFragment extends Fragment {
 
         });
     }
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        View rootView = null;
-        if(getActivity().findViewById(R.id.fragment_details_frame) != null){
-            rootView = inflater.inflate(R.layout.tablet_three_posters, container, false);
-            mGridView = (GridView) rootView.findViewById(R.id.list_item_tablet);
-        }
-        else {
-            rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            mGridView = (GridView) rootView.findViewById(R.id.list_item);
-        }
-
-        return rootView;
-    }
 
     public class fetchMovieData extends AsyncTask<String,Void,Void> {
 
         final String LOG_TAG = fetchMovieData.class.getSimpleName();
         long[] movieID;
         String[] posters;
+        int selectPos = 0;
 
-        public fetchMovieData(){
-
+        public fetchMovieData(int selectedPosition){
+            selectPos = selectedPosition;
+            Log.v("selectPos", " "+selectPos);
         }
         @Override
         protected Void doInBackground(String... params) {
@@ -262,9 +334,9 @@ public class MainActivityFragment extends Fragment {
 
                 posters[i]        = results.getJSONObject(i).getString("poster_path");
                 movieID[i]        = results.getJSONObject(i).getLong("id");
-                if (i == 0)
+
                 Log.v(" poster:  ",posters[i]);
-                Log.v("Id: ",""+movieID[i]);
+                Log.v("IdI: ",""+movieID[i]);
             }
 
             return null;
@@ -272,9 +344,10 @@ public class MainActivityFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
 
             try{
-                mCallBacks.getID(movieID[0]);
+                mCallBacks.getID(movieID[selectPos]);
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -290,47 +363,25 @@ public class MainActivityFragment extends Fragment {
             }catch (Exception e){
 
             }
-            customAdapter = new customListAdapter(getActivity(), posters, state);
+            mGridView.setClickable(true);
+            customAdapter = new customListAdapter(getActivity(),
+                    posters, state, posters.length);
 
             mGridView.setAdapter(customAdapter);
-            mGridView.setClickable(true);
-            Log.v(LOG_TAG, "MYPOS: "+mPosition);
+            mGridView.setSelection(selectPos);
 
             mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View v,
                                         int position, long id) {
 
                     mCallBacks.idSelected(movieID[position]);
-                    mPosition = position;
                     mGridView.setTag(position);
                 }
 
             });
-
-            super.onPostExecute(result);
+            //mGridView.deferNotifyDataSetChanged();
         }
 
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (outState != null ) {
-            outState.putInt("Position", (int) mGridView.getTag());
-            Log.v("MMMMSSS", " " + (int) mGridView.getTag());
-        }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mCallBacks = (CallBacks) activity;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mCallBacks = null;
     }
 
 }

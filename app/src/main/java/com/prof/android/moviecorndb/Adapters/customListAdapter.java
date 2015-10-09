@@ -8,54 +8,60 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
+import com.prof.android.moviecorndb.MainActivity;
+import com.prof.android.moviecorndb.MainActivityFragment;
 import com.prof.android.moviecorndb.R;
 import com.prof.android.moviecorndb.Utility.AndroidFiles;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 /**
  * Created by prof on 8/19/15.
  */
-public class customListAdapter extends ArrayAdapter<String> {
+public class customListAdapter extends BaseAdapter {
 
-    //private safeLoadToSDCard safeData;
     private Context mContext;
-    private String[] mThumbIds = null;
     int state;
-    SharedPreferences.Editor editor;
+    int mCount;
+    private String[] mThumbIds ;
 
-    public customListAdapter(Context context, String[] param, int state) {
-        super(context, 0, 0);
+    public customListAdapter(Context context, String[] param, int state, int count) {
+        super();
+
         this.mContext  = context;
-        this.mThumbIds = param;
+        mThumbIds = param;
         this.state = state;
-
-        editor = context.getSharedPreferences("MYPOS",context.MODE_PRIVATE).edit();
-    }
-
-    @Override
-    public void add(String object) {
-        super.add(object);
-        setNotifyOnChange(true);
+        this.mCount = count;
     }
 
     @Override
     public int getCount(){
         if(mThumbIds != null) {
-            return mThumbIds.length;
+            return this.mCount;
         }
         else
             return 0;
     }
 
     @Override
+    public Object getItem(int position) {
+        return null;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return  position;
+    }
+
+    @Override
     public View getView(final int position,View convertView,ViewGroup parent) {
 
-        if (convertView == null) {
-            convertView = LayoutInflater.from(this.mContext).inflate(R.layout.image_list_item,
+        convertView = LayoutInflater.from(this.mContext).inflate(R.layout.image_list_item,
                     parent, false);
-        }
 
         ImageView imageView = (ImageView) convertView.findViewById(R.id.image_view_item_1);
         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
@@ -63,17 +69,15 @@ public class customListAdapter extends ArrayAdapter<String> {
         final String SCHEMA      = "http";
         final String AUTHORITY   = "image.tmdb.org";
         final String PATH        = "t/p/w342";
-        String APPEND_PATH = null;
+        String APPEND_PATH  = mThumbIds[position];
 
-        if(mThumbIds != null) {
-            APPEND_PATH  = mThumbIds[position];
-        }
+        Log.v("MTHUU", " "+mThumbIds[position]);
 
         Uri.Builder uri = new Uri.Builder();
-        uri.scheme(SCHEMA).authority(AUTHORITY).path(PATH);
+        uri.scheme(SCHEMA).authority(AUTHORITY).path(PATH).build();
 
         String myUri = uri.toString()+APPEND_PATH;
-        Log.v("uri", " :  " + myUri);
+        Log.v("uri", " :  " + position);
 
         if (this.state == 0) {
             try{
@@ -81,7 +85,6 @@ public class customListAdapter extends ArrayAdapter<String> {
             }catch (Exception e){
                 e.printStackTrace();
             }
-            return convertView;
         }
         else {
             try {
@@ -90,9 +93,8 @@ public class customListAdapter extends ArrayAdapter<String> {
                 e.printStackTrace();
             }
 
-            return convertView;
         }
-
+        return convertView;
     }
 
 }
