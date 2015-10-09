@@ -49,7 +49,10 @@ public class MainActivityFragment extends Fragment {
     GridView mGridView;
     fetchMovieData movieData;
     customListAdapter customAdapter;
+
     SharedPreferences editor;
+    SharedPreferences sState;
+    SharedPreferences.Editor rateEditor;
 
     Uri uri = Uri.parse(MoviesContract.BASE_CONTENT_URI+"/"+
             MoviesContract.MOVIE.TABLE_NAME);
@@ -70,7 +73,9 @@ public class MainActivityFragment extends Fragment {
         setHasOptionsMenu(true);
 
         movieData = new fetchMovieData();
-        editor = getActivity().getSharedPreferences("MYPOS",getActivity().MODE_PRIVATE);
+        editor = getActivity().getSharedPreferences("MYPOS", getActivity().MODE_PRIVATE);
+        sState = getActivity().getSharedPreferences("MyRate", getActivity().MODE_PRIVATE);
+        rateEditor = getActivity().getSharedPreferences("MyRate", getActivity().MODE_PRIVATE).edit();
     }
 
     @Override
@@ -85,31 +90,35 @@ public class MainActivityFragment extends Fragment {
         if (id == R.id.popular) {
             Log.v("RATED", " POP");
             updatePopulare();
+            rateEditor.putInt("STATE", 0);
             state = 0;
         }
         else if (id == R.id.rated) {
             updateRated();
             state = 1;
+            rateEditor.putInt("STATE",1);
         }
         else if (id == R.id.theater) {
             updateTheatr();
             state = 2;
+            rateEditor.putInt("STATE",2);
         }
         else if (id == R.id.favourite_movie){
             updateFavourite();
             state = 3;
+            rateEditor.putInt("STATE",3);
         }
         return true;
     }
 
     public void onStart() {
-        if (state == 0)
+        if (sState.getInt("STATE",0) == 0)
             updatePopulare();
-        else if (state == 1)
+        else if (sState.getInt("STATE",1) == 1)
             updateRated();
-        else if (state == 2)
+        else if (sState.getInt("STATE",2) == 2)
             updateTheatr();
-        else if (state == 3)
+        else if (sState.getInt("STATE",3) == 3)
             updateFavourite();
         else
         updatePopulare();
@@ -170,7 +179,7 @@ public class MainActivityFragment extends Fragment {
         }
         try{
             mCallBacks.getID(Ids[0]);
-        }catch (NullPointerException e){
+        }catch (Exception e){
             e.printStackTrace();
         }
 
@@ -315,6 +324,13 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mGridView.setSelection(editor.getInt("myPosition", 0));
+        Log.v("MYTAGG", " " + editor.getInt("myPosition", 0));
+    }
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
         mGridView.setSelection(editor.getInt("myPosition", 0));
         Log.v("MYTAGG", " " + editor.getInt("myPosition", 0));
     }

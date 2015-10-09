@@ -99,7 +99,7 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
                 findFragmentByTag("TTTGG")).updateUI(id);
     }
 
-    public void replace(android.app.Fragment fragment){
-            getFragmentManager().beginTransaction().replace(R.id.fragment_movies,fragment).commit();
-    }
+//    public void replace(android.app.Fragment fragment){
+//            getFragmentManager().beginTransaction().replace(R.id.fragment_movies,fragment).commit();
+//    }
 }

@@ -42,12 +42,13 @@ public class MovieDBHelper extends SQLiteOpenHelper{
         String movieReviewsSql = String.format(
                 "CREATE TABLE %s (%s INTEGER PRIMARY KEY," +
                         " %s LONG NOT NULL," +
-                        "%s TEXT NOT NULL, %s TEXT NOT NULL );",
+                        "%s TEXT NOT NULL, %s TEXT NOT NULL, %s TEXT NOT NULL );",
                 MoviesContract.MOVIE_REVIEWS.TABLE_NAME,
                 MoviesContract.MOVIE_REVIEWS._ID,
                 MoviesContract.MOVIE_REVIEWS.MOVIE_ID_R,
                 MoviesContract.MOVIE_REVIEWS.REVIEW_USER,
-                MoviesContract.MOVIE_REVIEWS.REVIEW_CONTENT
+                MoviesContract.MOVIE_REVIEWS.REVIEW_CONTENT,
+                MoviesContract.MOVIE_REVIEWS.MOVIE_YOUTUBE
 
         );
 

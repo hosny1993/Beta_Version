@@ -18,7 +18,7 @@ public class MoviesContract {
 
 
     public final static String DB_NAME = "moviesCorn.db";
-    public final static int DB_VERSION = 4;
+    public final static int DB_VERSION = 6;
 
     public static class MOVIE  implements BaseColumns{
 
@@ -67,6 +67,7 @@ public class MoviesContract {
         public final static String REVIEW_USER     = "user_name";
         public final static String REVIEW_CONTENT  = "user_review";
         public final static String MOVIE_ID_R  = "key_movie_id";
+        public final static String MOVIE_YOUTUBE  = "youtube_key";
     }
 
 }

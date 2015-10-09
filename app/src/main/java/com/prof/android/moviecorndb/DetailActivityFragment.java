@@ -1,14 +1,22 @@
 package com.prof.android.moviecorndb;
 
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +24,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.support.v7.widget.ShareActionProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +45,7 @@ import org.json.JSONObject;
  */
 public class DetailActivityFragment extends Fragment implements MainActivityFragment.CallBacks{
 
+
     TextView title;
     TextView rate;
     TextView overview;
@@ -55,17 +65,70 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
 
     ContentValues movieValues = new ContentValues();
     ContentValues reviewValues = new ContentValues();
-    long movieId = 0;
+
     ContentResolver resolver;
     final String API_KEY = "3b28bfa808bcbba743a3f81de1b68868";
+
+    String youtubeUrl = null;
+    long movieId = 0;
+
+    Uri queryUri = Uri.parse(MoviesContract.BASE_CONTENT_URI + "/" +
+            MoviesContract.MOVIE_REVIEWS.TABLE_NAME);
+
+    public DetailActivityFragment() {
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
-    public DetailActivityFragment() {
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.share_menu, menu);
+
+        // Retrieve the share menu item
+        MenuItem menuItem = menu.findItem(R.id.menu_item_share);
+
+        // Get the provider and hold onto it to set/change the share intent.
+        ShareActionProvider mShareActionProvider =
+                (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+        if (mShareActionProvider != null ) {
+            mShareActionProvider.setShareIntent(createShareForecastIntent());
+        } else {
+            Log.d("HHGGFF", "Share Action Provider is null?");
+        }
+    }
+
+    private Intent createShareForecastIntent() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, youtubeUrl);
+//        Cursor cursor = resolver.query(queryUri, null, null, null, null);
+//        cursor.moveToFirst();
+//
+//        try {
+//            youtubeUrl = cursor.getString(
+//                    cursor.getColumnIndex(MoviesContract.MOVIE_REVIEWS.MOVIE_YOUTUBE));
+//            Log.v("YOUTTT", " " + youtubeUrl);
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//
+//        shareIntent.putExtra(Intent.EXTRA_TEXT, " " + youtubeUrl);
+//        int i = resolver.delete(queryUri.withAppendedPath(
+//                queryUri,
+//                cursor.getString(
+//                        cursor.getColumnIndex(MoviesContract.MOVIE_REVIEWS.MOVIE_ID_R))),null,null);
+//        Log.v("DELETED ", ""+queryUri.withAppendedPath(
+//                queryUri,
+//                cursor.getString(
+//                        cursor.getColumnIndex(MoviesContract.MOVIE_REVIEWS.MOVIE_ID_R)))+i);
+        return shareIntent;
     }
 
     @Override
@@ -155,16 +218,16 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
         favourite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(),"Added",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Added", Toast.LENGTH_SHORT).show();
 
-                Uri reviewUri = Uri.parse(MoviesContract.BASE_CONTENT_URI+"/"+
+                Uri reviewUri = Uri.parse(MoviesContract.BASE_CONTENT_URI + "/" +
                         MoviesContract.MOVIE_REVIEWS.TABLE_NAME);
-                Uri movieUri = Uri.parse(MoviesContract.BASE_CONTENT_URI+"/"+
+                Uri movieUri = Uri.parse(MoviesContract.BASE_CONTENT_URI + "/" +
                         MoviesContract.MOVIE.TABLE_NAME);
-                movieUri  = resolver.insert(movieUri,movieValues);
+                movieUri = resolver.insert(movieUri, movieValues);
 
                 Log.v("movieUri:", movieUri + "");
-                
+
                 ImageView tmpImage = new ImageView(getActivity());
 
                 Picasso.with(getActivity()).
@@ -368,23 +431,39 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
             movieTrailersAdapter = new trailersAdapter(getActivity(), trailersName, trailersCount);
             trailerListView.setAdapter(movieTrailersAdapter);
 
+            final String SCHEMA = "http";
+            final String AUTHORITY = "www.youtube.com";
+            final String PATH = "watch";
+            final String KEY  = "v";
+
+            Uri.Builder uri = new Uri.Builder();
+
+            try {
+                uri.scheme(SCHEMA).authority(AUTHORITY).
+                        path(PATH).
+                        appendQueryParameter(KEY, trailersUrls[0]).build();
+                reviewValues.put(MoviesContract.MOVIE_REVIEWS.MOVIE_YOUTUBE, uri.toString());
+                youtubeUrl = uri.toString();
+                Log.v("HHGGDD", " "+uri.toString());
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
             trailerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    final String SCHEMA = "http";
-                    final String AUTHORITY = "www.youtube.com";
-                    final String PATH = "watch";
-                    final String KEY  = "v";
 
-                    Uri.Builder uri = new Uri.Builder();
-                    uri.scheme(SCHEMA).authority(AUTHORITY).
+                    Uri.Builder urii = new Uri.Builder();
+
+                    urii.scheme(SCHEMA).authority(AUTHORITY).
                             path(PATH).
-                            appendQueryParameter(KEY, trailersUrls[position]);
-                    String myUri = uri.toString();
-
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(myUri)));
+                            appendQueryParameter(KEY, trailersUrls[position]).build();
+                    String myUrii = urii.toString();
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(myUrii)));
                 }
             });
+
             super.onPostExecute(aVoid);
         }
     }
@@ -455,6 +534,7 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
             reviewsAdapterList = new reviewsAdapter(getActivity(), authorsName,
                     reviewContent, reviewsCount);
             reviewsListView.setAdapter(reviewsAdapterList);
+            resolver.insert(queryUri,reviewValues);
 
             reviewsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override

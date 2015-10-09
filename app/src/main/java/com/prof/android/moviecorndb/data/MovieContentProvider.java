@@ -63,12 +63,18 @@ public class MovieContentProvider extends ContentProvider{
 //                        " = " + MoviesContract.MOVIE_REVIEWS.TABLE_NAME +
 //                        "." + MoviesContract.MOVIE_REVIEWS.MOVIE_ID_R
 //        );
-
+        String orderBy = (TextUtils.isEmpty(sortOrder) ?
+                MoviesContract.MOVIE.SORT_ORDER
+                :sortOrder);
+        SQLiteDatabase database = movieDBHelper.getReadableDatabase();
+        Cursor cursor = null;
         switch (sUriMatcher.match(uri)){
             case MoviesContract.MOVIE.MOVIE_TYPE:
                 queryBuilder.setTables(
                         MoviesContract.MOVIE.TABLE_NAME
                 );
+                cursor = queryBuilder.query(database,projection,selection,
+                        selectionArgs,null,null,orderBy);
                 break;
             case MoviesContract.MOVIE.MOVIE_ITEM_TYPE:
                 queryBuilder.setTables(
@@ -76,11 +82,15 @@ public class MovieContentProvider extends ContentProvider{
                 );
                 queryBuilder.appendWhere(MoviesContract.MOVIE.MOVIE_ID +
                         "=" + uri.getLastPathSegment());
+                cursor = queryBuilder.query(database,projection,selection,
+                        selectionArgs,null,null,orderBy);
                 break;
             case MoviesContract.MOVIE_REVIEWS.MOVIE_REVIEWS_TYPE:
                 queryBuilder.setTables(
                         MoviesContract.MOVIE_REVIEWS.TABLE_NAME
                 );
+                cursor = queryBuilder.query(database,projection,selection,
+                        selectionArgs,null,null,null);
                 break;
             case MoviesContract.MOVIE_REVIEWS.MOVIE_REVIEWSS_ITEM_TYPE:
                 queryBuilder.setTables(
@@ -88,17 +98,12 @@ public class MovieContentProvider extends ContentProvider{
                 );
                 queryBuilder.appendWhere(MoviesContract.MOVIE_REVIEWS.MOVIE_ID_R +
                         "=" + uri.getLastPathSegment());
+                cursor = queryBuilder.query(database,projection,selection,
+                        selectionArgs,null,null,null);
                 break;
             default:
                 throw new IllegalArgumentException("UNKWON URI "+uri);
         }
-        String orderBy = (TextUtils.isEmpty(sortOrder) ?
-                MoviesContract.MOVIE.SORT_ORDER
-                :sortOrder);
-        SQLiteDatabase database = movieDBHelper.getReadableDatabase();
-        Cursor cursor = queryBuilder.query(database,projection,selection,
-                selectionArgs,null,null,orderBy);
-
         cursor.setNotificationUri(getContext().getContentResolver(),uri);
         Log.d(LOG_TAG, "queried records: " + cursor.getCount());
 
