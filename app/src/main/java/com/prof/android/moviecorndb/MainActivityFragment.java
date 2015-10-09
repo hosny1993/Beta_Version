@@ -286,11 +286,15 @@ public class MainActivityFragment extends Fragment {
             }
 
             int state = 0;
-            if (getActivity().findViewById(R.id.fragment_details_frame) != null){
-                state = 1;
-            }
-            else {
-                state = 0;
+            try {
+
+                if (getActivity().findViewById(R.id.fragment_details_frame) != null) {
+                    state = 1;
+                } else {
+                    state = 0;
+                }
+            }catch (Exception e){
+
             }
             customAdapter = new customListAdapter(getActivity(), posters, state);
             mGridView.setAdapter(customAdapter);

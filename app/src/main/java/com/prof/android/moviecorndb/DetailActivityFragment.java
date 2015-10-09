@@ -104,30 +104,27 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
     }
 
     private Intent createShareForecastIntent() {
+
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, youtubeUrl);
-//        Cursor cursor = resolver.query(queryUri, null, null, null, null);
-//        cursor.moveToFirst();
-//
-//        try {
-//            youtubeUrl = cursor.getString(
-//                    cursor.getColumnIndex(MoviesContract.MOVIE_REVIEWS.MOVIE_YOUTUBE));
-//            Log.v("YOUTTT", " " + youtubeUrl);
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//
-//        shareIntent.putExtra(Intent.EXTRA_TEXT, " " + youtubeUrl);
-//        int i = resolver.delete(queryUri.withAppendedPath(
-//                queryUri,
-//                cursor.getString(
-//                        cursor.getColumnIndex(MoviesContract.MOVIE_REVIEWS.MOVIE_ID_R))),null,null);
-//        Log.v("DELETED ", ""+queryUri.withAppendedPath(
-//                queryUri,
-//                cursor.getString(
-//                        cursor.getColumnIndex(MoviesContract.MOVIE_REVIEWS.MOVIE_ID_R)))+i);
+
+        Cursor cursor = resolver.query(queryUri,null,
+                MoviesContract.MOVIE_REVIEWS.MOVIE_ID_R + " = " + movieId
+                , null, null);
+
+        try {
+            while (cursor.moveToNext()) {
+                youtubeUrl = cursor.getString(
+                        cursor.getColumnIndex(MoviesContract.MOVIE_REVIEWS.MOVIE_YOUTUBE));
+                Log.v("YOUTTT", " " + movieId + " : "+youtubeUrl );
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        shareIntent.putExtra(Intent.EXTRA_TEXT, " " + youtubeUrl);
+
         return shareIntent;
     }
 
@@ -344,6 +341,7 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
                 movieLenght.setText(" " + RUNTIME + " min ");
                 movieTagLine.setText(TAGLINE);
                 title.setText(TITLE);
+                getActivity().setTitle(TITLE);
                 date.setText(RELEASE);
                 overview.setText(OVERVIEW);
                 rate.setText(RATE+"/10");
@@ -416,6 +414,8 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
             trailersUrls = new String[trailersCount];
             trailersName = new String[trailersCount];
 
+            reviewValues.put(MoviesContract.MOVIE_REVIEWS.MOVIE_ID_R,ID);
+
             for (int i=0; i<trailersCount; i++){
 
                 trailersUrls[i] = jsonArray.getJSONObject(i).getString("key");
@@ -448,6 +448,7 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
             }catch (Exception e){
                 e.printStackTrace();
             }
+            resolver.insert(queryUri,reviewValues);
 
             trailerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -519,12 +520,8 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
 
                 authorsName[i]   = jsonArray.getJSONObject(i).getString("author");
                 reviewContent[i] = jsonArray.getJSONObject(i).getString("content");
-                Log.d("AAAAAAA",authorsName[i]);
+                Log.d("AAAAAAA", authorsName[i]);
                 urls[i]          = jsonArray.getJSONObject(i).getString("url");
-
-                reviewValues.put(MoviesContract.MOVIE_REVIEWS.MOVIE_ID_R,movieID);
-                reviewValues.put(MoviesContract.MOVIE_REVIEWS.REVIEW_USER,authorsName[i]);
-                reviewValues.put(MoviesContract.MOVIE_REVIEWS.REVIEW_CONTENT,reviewContent[i]);
             };
         }
 
@@ -534,7 +531,6 @@ public class DetailActivityFragment extends Fragment implements MainActivityFrag
             reviewsAdapterList = new reviewsAdapter(getActivity(), authorsName,
                     reviewContent, reviewsCount);
             reviewsListView.setAdapter(reviewsAdapterList);
-            resolver.insert(queryUri,reviewValues);
 
             reviewsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
